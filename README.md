@@ -196,3 +196,9 @@ conda list
 
 ## サポート
 技術的な質問や問題がございましたら、開発チームまでお問い合わせください。
+
+# 1. パッケージインストール
+pip install pandas openpyxl pyautogui pyperclip pillow
+
+# 2. 実行
+python rpa_system.py
