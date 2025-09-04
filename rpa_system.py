@@ -64,8 +64,8 @@ class RPASystem:
 
         # 高さとB値の対応表
         self.height_b_mapping = {
-            "200": {2750: 225, 2500: 225, 2250: 0},
-            "201": {3000: 250, 2750: 200, 2500: 175, 2250: 0},
+            "200": {2750: 250, 2500: 225, 2250: 0},
+            "201": {3000: 250, 2750: 300, 2500: 175, 2250: 0},
         }
 
         # H値の計算用データ（350, 351のみ使用）
@@ -157,7 +157,7 @@ class RPASystem:
     def setup_gui(self):
         """GUIの設定"""
         self.root = tk.Tk()
-        self.root.title("会社RPAシステム")
+        self.root.title("検査表自動計算")
         self.root.geometry("600x500")
 
         # メインフレーム
@@ -165,7 +165,7 @@ class RPASystem:
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
         # タイトル
-        title_label = ttk.Label(main_frame, text="RPA計算システム", font=("Arial", 16, "bold"))
+        title_label = ttk.Label(main_frame, text="検査表自動計算", font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
 
         # 入力フィールド
