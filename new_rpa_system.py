@@ -501,9 +501,9 @@ class NewRPASystem:
     def write_to_excel(self, username, model, manufacturing, order, file_path=None):
         """Excelファイルにデータを書き込み"""
         try:
-            # デフォルトでt22.xlsxファイルを使用
+            # デフォルトでcheck1.xlsxファイルを使用
             if not file_path:
-                file_path = "t22.xlsx"
+                file_path = "check1.xlsx"
                 if not os.path.exists(file_path):
                     messagebox.showerror("エラー", f"ファイルが見つかりません: {file_path}\n既存のExcelファイルを配置してください。")
                     return False
@@ -535,15 +535,21 @@ class NewRPASystem:
                 ws3["F2"] = f"受注番号：{order}"
                 ws3["F3"] = f"製造番号：{manufacturing}"
 
-            # ファイルを保存
-            wb.save(file_path)
+            # 新しいファイル名を生成（タイムスタンプ付き）
+            base_name = os.path.splitext(file_path)[0]
+            extension = os.path.splitext(file_path)[1]
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            new_file_path = f"{base_name}_processed_{timestamp}{extension}"
+            
+            # 新しいファイルとして保存
+            wb.save(new_file_path)
 
-            messagebox.showinfo("成功", f"Excelファイルにデータを書き込みました:\n{file_path}")
-            return True
+            messagebox.showinfo("成功", f"Excelファイルにデータを書き込みました:\n元ファイル: {os.path.basename(file_path)}\n新ファイル: {os.path.basename(new_file_path)}")
+            return True, new_file_path
 
         except Exception as e:
             messagebox.showerror("エラー", f"Excelファイルの書き込みに失敗しました:\n{str(e)}")
-            return False
+            return False, None
 
     def write_to_excel_direct(self):
         """入力データを直接Excelに書き込み"""
@@ -561,7 +567,7 @@ class NewRPASystem:
                 return
 
             # Excelファイルに書き込み
-            success = self.write_to_excel(username, model, manufacturing, order)
+            success, new_file_path = self.write_to_excel(username, model, manufacturing, order)
 
             if success:
                 # 結果表示エリアに更新
@@ -569,6 +575,8 @@ class NewRPASystem:
 
                 # 追加のExcel書き込み完了メッセージ
                 excel_result = f"""\n\n📊 Excel書き込み完了:
+✅ 元ファイル: check1.xlsx
+✅ 新ファイル: {os.path.basename(new_file_path)}
 ✅ 組立チェック表: B4,B5,F4,F5セルにデータを書き込み
 ✅ フレームテスト検査表: B3,B4,F2,F3セルにデータを書き込み  
 ✅ フレーム組立検査表: B3,B4,F2,F3セルにデータを書き込み"""
@@ -666,10 +674,16 @@ class NewRPASystem:
                                 run.text = run.text.replace(search_text, replace_text)
                                 replacement_count += 1
 
-            # ファイルを保存
-            doc.save(file_path)
+            # 新しいファイル名を生成（タイムスタンプ付き）
+            base_name = os.path.splitext(file_path)[0]
+            extension = os.path.splitext(file_path)[1]
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            new_file_path = f"{base_name}_processed_{timestamp}{extension}"
+            
+            # 新しいファイルとして保存
+            doc.save(new_file_path)
 
-            return replacement_count
+            return replacement_count, new_file_path
 
         except Exception as e:
             print(f"Wordファイル処理エラー: {str(e)}")
@@ -726,10 +740,10 @@ class NewRPASystem:
     def process_word_file(self, username, model, manufacturing, order, file_path=None):
         """Wordファイルを処理してキー文字列を置換"""
         try:
-            # デフォルトでt11.docxファイルを使用
+            # デフォルトでcheck2.docxファイルを使用
             if not file_path:
-                docx_file = "t11.docx"
-                doc_file = "t11.doc"
+                docx_file = "check2.docx"
+                doc_file = "check2.doc"
                 
                 if os.path.exists(docx_file):
                     file_path = docx_file
@@ -754,30 +768,32 @@ class NewRPASystem:
             total_replacements = 0
 
             # キー文字列を置換
+            new_file_path = None
             for key_string in key_strings:
-                count = self.replace_text_in_word(file_path, key_string, replacement_text)
+                count, new_file_path = self.replace_text_in_word(file_path, key_string, replacement_text)
                 total_replacements += count
 
             if total_replacements > 0:
                 messagebox.showinfo(
                     "成功",
                     f"Wordファイルの処理が完了しました:\n"
-                    f"ファイル: {os.path.basename(file_path)}\n"
+                    f"元ファイル: {os.path.basename(file_path)}\n"
+                    f"新ファイル: {os.path.basename(new_file_path)}\n"
                     f"置換回数: {total_replacements}回\n"
                     f"置換内容: {replacement_text}",
                 )
-                return True
+                return True, new_file_path
             else:
                 messagebox.showwarning(
                     "警告",
                     f"置換対象のキー文字列が見つかりませんでした。\n"
                     f"検索対象キー文字列: {', '.join(key_strings)}",
                 )
-                return False
+                return False, None
 
         except Exception as e:
             messagebox.showerror("エラー", f"Wordファイルの処理に失敗しました:\n{str(e)}")
-            return False
+            return False, None
 
     def process_word_direct(self):
         """入力データを直接Wordファイルに適用"""
@@ -795,7 +811,7 @@ class NewRPASystem:
                 return
 
             # Wordファイルを処理
-            success = self.process_word_file(username, model, manufacturing, order)
+            success, new_file_path = self.process_word_file(username, model, manufacturing, order)
 
             if success:
                 # 結果表示エリアに更新
@@ -803,9 +819,10 @@ class NewRPASystem:
 
                 # 追加のWord処理完了メッセージ
                 word_result = f"""\n\n📝 Word処理完了:
-✅ ファイル: t11.docx
+✅ 元ファイル: check2.docx
+✅ 新ファイル: {os.path.basename(new_file_path)}
 ✅ キー文字列「検査対象情報」を「{order}/{manufacturing}」に置換
-✅ ファイルが正常に更新されました"""
+✅ 新しいファイルとして保存されました"""
 
                 self.result_text.insert(tk.END, word_result)
 
