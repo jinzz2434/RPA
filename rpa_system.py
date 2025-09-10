@@ -82,20 +82,70 @@ H_VALUES = {
 # C値の計算用データ
 C_VALUES = {
     "200": {
-        4: 630, 5: 1000, 6: 1000, 7: 1500, 8: 1500, 9: 1500, 10: 1500,
-        11: 1500, 12: 1500, 13: 1500, 14: 1500, 15: 1500, 16: 1500, 17: 1500,
+        4: 630,
+        5: 1000,
+        6: 1000,
+        7: 1500,
+        8: 1500,
+        9: 1500,
+        10: 1500,
+        11: 1500,
+        12: 1500,
+        13: 1500,
+        14: 1500,
+        15: 1500,
+        16: 1500,
+        17: 1500,
     },
     "201": {
-        4: 730, 5: 980, 6: 1000, 7: 1480, 8: 1500, 9: 1500, 10: 1500,
-        11: 1500, 12: 1500, 13: 1500, 14: 1500, 15: 1500, 16: 1500, 17: 1500,
+        4: 730,
+        5: 980,
+        6: 1000,
+        7: 1480,
+        8: 1500,
+        9: 1500,
+        10: 1500,
+        11: 1500,
+        12: 1500,
+        13: 1500,
+        14: 1500,
+        15: 1500,
+        16: 1500,
+        17: 1500,
     },
     "350": {
-        3: 1000, 4: 1000, 5: 1000, 6: 1500, 7: 2000, 8: 2000, 9: 2000,
-        10: 2000, 11: 2000, 12: 2000, 13: 2000, 14: 2000, 15: 2000, 16: 2000, 17: 2000,
+        3: 1000,
+        4: 1000,
+        5: 1000,
+        6: 1500,
+        7: 2000,
+        8: 2000,
+        9: 2000,
+        10: 2000,
+        11: 2000,
+        12: 2000,
+        13: 2000,
+        14: 2000,
+        15: 2000,
+        16: 2000,
+        17: 2000,
     },
     "351": {
-        3: 850, 4: 900, 5: 900, 6: 1500, 7: 1900, 8: 1900, 9: 1900,
-        10: 1900, 11: 1900, 12: 1900, 13: 1900, 14: 1900, 15: 1900, 16: 1900, 17: 1900,
+        3: 850,
+        4: 900,
+        5: 900,
+        6: 1500,
+        7: 1900,
+        8: 1900,
+        9: 1900,
+        10: 1900,
+        11: 1900,
+        12: 1900,
+        13: 1900,
+        14: 1900,
+        15: 1900,
+        16: 1900,
+        17: 1900,
     },
 }
 
@@ -115,16 +165,16 @@ HEIGHT_RESOLUTION = 250
 class RPASystem:
     """
     検査表自動計算システムのメインクラス
-    
+
     チェーンガイドの検査表を自動計算するためのGUIアプリケーションを提供します。
     """
-    
+
     def __init__(self):
         """RPASystemの初期化"""
         self.setup_gui()
 
     # ==================== GUI設定メソッド ====================
-    
+
     def setup_gui(self):
         """GUIの設定"""
         self.root = tk.Tk()
@@ -143,7 +193,11 @@ class RPASystem:
         ttk.Label(main_frame, text="機種:", font=("Arial", 12)).grid(row=1, column=0, sticky=tk.W, pady=5)
         self.machine_var = tk.StringVar()
         machine_combo = ttk.Combobox(
-            main_frame, textvariable=self.machine_var, values=list(MACHINE_DATA.keys()), state="readonly", font=("Arial", 12)
+            main_frame,
+            textvariable=self.machine_var,
+            values=list(MACHINE_DATA.keys()),
+            state="readonly",
+            font=("Arial", 12),
         )
         machine_combo.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=5)
         machine_combo.bind("<<ComboboxSelected>>", self.on_machine_change)
@@ -162,10 +216,14 @@ class RPASystem:
         self.height_var = tk.StringVar()
         height_entry = ttk.Entry(main_frame, textvariable=self.height_var, font=("Arial", 12))
         height_entry.grid(row=4, column=1, sticky=(tk.W, tk.E), pady=5)
-        
+
         # 高さの入力例を表示
-        height_hint = ttk.Label(main_frame, text=f"※{MIN_HEIGHT}mm以上、{HEIGHT_RESOLUTION}mm刻み (例: {MIN_HEIGHT}, {MIN_HEIGHT + HEIGHT_RESOLUTION}, {MIN_HEIGHT + HEIGHT_RESOLUTION * 2}...)", 
-                               font=("Arial", 9), foreground="gray")
+        height_hint = ttk.Label(
+            main_frame,
+            text=f"※{MIN_HEIGHT}mm以上、{HEIGHT_RESOLUTION}mm刻み (例: {MIN_HEIGHT}, {MIN_HEIGHT + HEIGHT_RESOLUTION}, {MIN_HEIGHT + HEIGHT_RESOLUTION * 2}...)",
+            font=("Arial", 9),
+            foreground="gray",
+        )
         height_hint.grid(row=4, column=2, sticky=tk.W, padx=(10, 0), pady=5)
 
         # 計算ボタン
@@ -186,15 +244,15 @@ class RPASystem:
 
         # テキストエリアの設定を改善
         self.result_text = tk.Text(
-            result_frame, 
-            height=20, 
+            result_frame,
+            height=20,
             width=90,
             font=("Consolas", 12),
             wrap=tk.WORD,
             bg="#f8f9fa",
             fg="#212529",
             relief=tk.FLAT,
-            borderwidth=1
+            borderwidth=1,
         )
         self.result_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
@@ -202,7 +260,7 @@ class RPASystem:
         scrollbar = ttk.Scrollbar(result_frame, orient=tk.VERTICAL, command=self.result_text.yview)
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
         self.result_text.configure(yscrollcommand=scrollbar.set)
-        
+
         # グリッドの重み設定
         main_frame.columnconfigure(1, weight=1)
         main_frame.rowconfigure(6, weight=1)
@@ -213,7 +271,7 @@ class RPASystem:
         self.on_machine_change()
 
     # ==================== イベントハンドラメソッド ====================
-    
+
     def on_machine_change(self, event=None):
         """機種が変更された時の処理"""
         machine = self.machine_var.get()
@@ -224,7 +282,7 @@ class RPASystem:
                 self.inch_combo.set(inches[0])
 
     # ==================== 計算メソッド ====================
-    
+
     def calculate(self):
         """計算実行"""
         try:
@@ -242,10 +300,13 @@ class RPASystem:
             if height < MIN_HEIGHT:
                 messagebox.showerror("高さエラー", f"高さは最小{MIN_HEIGHT}mm以上で入力してください")
                 return
-            
+
             # 高さの分解能チェック
             if (height - MIN_HEIGHT) % HEIGHT_RESOLUTION != 0:
-                messagebox.showerror("高さエラー", f"高さは{MIN_HEIGHT}mmから{HEIGHT_RESOLUTION}mm刻みで入力してください\n例: {MIN_HEIGHT}, {MIN_HEIGHT + HEIGHT_RESOLUTION}, {MIN_HEIGHT + HEIGHT_RESOLUTION * 2}...")
+                messagebox.showerror(
+                    "高さエラー",
+                    f"高さは{MIN_HEIGHT}mmから{HEIGHT_RESOLUTION}mm刻みで入力してください\n例: {MIN_HEIGHT}, {MIN_HEIGHT + HEIGHT_RESOLUTION}, {MIN_HEIGHT + HEIGHT_RESOLUTION * 2}...",
+                )
                 return
 
             # 機種データの取得
@@ -321,7 +382,7 @@ class RPASystem:
             b_display = f"{B:.2f}"
             if machine in ["350", "351"] and height <= 4000:
                 b_display += " (H=4000以下の場合、図面確認)"
-            
+
             result = f"""═══════════════════════════════════════════════════════════
                     検査表自動計算結果
 ═══════════════════════════════════════════════════════════
@@ -337,29 +398,25 @@ class RPASystem:
 
 【チェーンガイド計算結果】
 ┌─────────────────────────────────────────────────────────┐
-│  A値 = {A:>8.2f}mm                                      │
-│  B値 = {b_display:>8}!!351の場合は図面確認                                   │
-│  C値 = {C:>8.0f}mm                                      │
-│  D値 = {D:>8.0f}mm                                      │
-│  H値 = {H:>8.0f}mm                                      │
-│  スタビ = {ST:>6.2f}mm!!図面確認                                  │
+│  A値 = {A:>8.2f}mm                                      
+│  B値 = {b_display:>8}(!!351の場合は図面確認)                                  
+│  C値 = {C:>8.0f}mm                                      
+│  D値 = {D:>8.0f}mm                                      
+│  H値 = {H:>8.0f}mm                                      
+│  スタビ = {ST:>6.2f}mm(!!図面確認)                                 
 └─────────────────────────────────────────────────────────┘
 
 【エンドフレーム仕様】
 ┌─────────────────────────────────────────────────────────┐
-│  エンドフレームA = {height:>6.0f}mm                     │
-│  エンドフレーム左B = {ELB:>6.0f}mm                      │
-│  エンドフレーム左C = {ELC:>6.0f}mm                      │
-│  エンドフレーム右B = {ERB:>6.0f}mm                      │
-│  エンドフレーム右C = {ERC:>6.0f}mm                      │
-│  溶接補強高さ右 = {EB:>6.0f}mm                          │
-│  溶接補強高さ左 = {EC:>6.0f}mm                          │
+│  エンドフレームA = {height:>6.0f}mm                      
+│  エンドフレーム左B = {ELB:>6.0f}mm                       
+│  エンドフレーム左C = {ELC:>6.0f}mm                      
+│  エンドフレーム右B = {ERB:>6.0f}mm                      
+│  エンドフレーム右C = {ERC:>6.0f}mm                      
+│  溶接補強高さ右 = {EB:>6.0f}mm                          
+│  溶接補強高さ左 = {EC:>6.0f}mm                          
 └─────────────────────────────────────────────────────────┘
 
-【計算詳細】
-• H値: 機種{machine}、インチ数{inch}の場合
-• C値: 機種{machine}、高さ{height}mmの場合  
-• D値: 機種{machine}、高さ{height}mmの場合
 
 ═══════════════════════════════════════════════════════════
 """
@@ -389,15 +446,15 @@ class RPASystem:
             messagebox.showerror("計算エラー", error_msg)
 
     # ==================== 個別計算メソッド ====================
-    
+
     def calculate_b_value(self, machine, height):
         """
         B値の計算
-        
+
         Args:
             machine (str): 機種コード ("200", "201", "350", "351")
             height (int): 高さ(mm)
-            
+
         Returns:
             int: 計算されたB値
         """
@@ -428,11 +485,11 @@ class RPASystem:
     def calculate_h_value(self, machine, inch):
         """
         H値の計算（350, 351のみ使用）
-        
+
         Args:
             machine (str): 機種コード ("350", "351")
             inch (int): インチ数
-            
+
         Returns:
             int: 計算されたH値
         """
@@ -449,11 +506,11 @@ class RPASystem:
     def calculate_c_value(self, machine, height):
         """
         C値の計算
-        
+
         Args:
             machine (str): 機種コード
             height (int): 高さ(mm)
-            
+
         Returns:
             int: 計算されたC値
         """
@@ -488,11 +545,11 @@ class RPASystem:
     def calculate_d_value(self, machine, height):
         """
         D値の計算
-        
+
         Args:
             machine (str): 機種コード
             height (int): 高さ(mm)
-            
+
         Returns:
             int: 計算されたD値
         """
@@ -506,10 +563,10 @@ class RPASystem:
     def height_to_h_index(self, height):
         """
         高さからHインデックスを計算（分解能250）
-        
+
         Args:
             height (int): 高さ(mm)
-            
+
         Returns:
             int: Hインデックス (3-17)
         """
@@ -523,7 +580,7 @@ class RPASystem:
             return 3 + ((height - 3000) // HEIGHT_RESOLUTION)
 
     # ==================== メイン実行メソッド ====================
-    
+
     def run(self):
         """GUIの実行"""
         self.root.mainloop()
